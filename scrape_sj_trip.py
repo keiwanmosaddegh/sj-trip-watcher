@@ -75,6 +75,7 @@ def trip_scrape():
             (By.XPATH, '//div[@ng-switch-when="SUCCESS"]'))
         WebDriverWait(driver, 5).until(timetable_present)
     except:
+        print("Doesn't find table. Exiting function.")
         return
 
     timetable = driver.find_element_by_xpath(
