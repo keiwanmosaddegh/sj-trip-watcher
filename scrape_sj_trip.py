@@ -1,5 +1,8 @@
 import os
 from selenium import webdriver
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 import time
 import smtplib
 import ssl
@@ -46,7 +49,7 @@ https://www.sj.se/en/home.html#/tidtabell/%25C3%2585re/Stockholm%2520Central/enk
 """
 
 # Original values
-ogAvailableAmount = 3
+og_available_amount = 3
 
 
 def send_email(custom_message):
@@ -62,37 +65,47 @@ def trip_scrape():
         options=op
     )
 
+    # PATH = "C:\\Users\\keiwa\\Documents\\projects\\apps\\sj-trip-watcher\\chromedriver.exe"
+    # driver = webdriver.Chrome(executable_path=PATH)
+
     driver.get("https://www.sj.se/en/home.html#/tidtabell/%25C3%2585re/Stockholm%2520Central/enkel/avgang/20220320-0500/avgang/20220320-1300/BO-25--false///0//")
 
-    timeTable = driver.find_element_by_xpath(
+    try:
+        timetable_present = EC.presence_of_element_located(
+            (By.XPATH, '//div[@ng-switch-when="SUCCESS"]'))
+        WebDriverWait(driver, 5).until(timetable_present)
+    except:
+        return
+
+    timetable = driver.find_element_by_xpath(
         '//div[@ng-switch-when="SUCCESS"]')
 
-    timeTableRows = timeTable.find_elements_by_xpath(
+    timetable_rows = timetable.find_elements_by_xpath(
         '//div[@ng-repeat="timetableRow in sjTimetableModel"]')
 
-    timeTableRowsAmount = len(timeTableRows)
+    timetable_rows_amount = len(timetable_rows)
 
-    availableAmount = 0
-    unavailableAmount = 0
-    for row in timeTableRows:
+    available_amount = 0
+    unavailable_amount = 0
+    for row in timetable_rows:
         try:
             row.find_element_by_class_name(
                 "timetable-unexpanded-price--unavailable")
-            unavailableAmount += 1
+            unavailable_amount += 1
         except:
             pass
 
         try:
             row.find_element_by_class_name(
                 "timetable-unexpanded-price__wrapper")
-            availableAmount += 1
+            available_amount += 1
         except:
             pass
 
-    if timeTableRowsAmount != availableAmount + unavailableAmount:
+    if timetable_rows_amount != available_amount + unavailable_amount:
         send_email(unsuccessful_count)
 
-    if ogAvailableAmount != availableAmount:
+    if og_available_amount != available_amount:
         send_email(available_amount_diff)
 
     driver.close()
