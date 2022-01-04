@@ -116,6 +116,7 @@ starttime = time.time()
 while True:
     for _ in range(1440):
         trip_scrape()
+        print("One check done. Will check again in 1 minute.")
         time.sleep(60.0 - ((time.time() - starttime) % 60.0))
 
     print("24 hours have past. Sending email...")
