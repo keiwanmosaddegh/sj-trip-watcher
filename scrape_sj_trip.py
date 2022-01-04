@@ -73,7 +73,7 @@ def trip_scrape():
     try:
         timetable_present = EC.presence_of_element_located(
             (By.XPATH, '//div[@ng-switch-when="SUCCESS"]'))
-        WebDriverWait(driver, 5).until(timetable_present)
+        WebDriverWait(driver, 10).until(timetable_present)
     except:
         print("Doesn't find table. Exiting function.")
         return
