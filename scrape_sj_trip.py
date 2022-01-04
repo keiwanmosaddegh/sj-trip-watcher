@@ -103,11 +103,15 @@ def trip_scrape():
             pass
 
     if timetable_rows_amount != available_amount + unavailable_amount:
+        print("Count was unsuccessful, sending email.")
         send_email(unsuccessful_count)
 
     if og_available_amount != available_amount:
+        print("The available amount has changed, sending email.")
         send_email(available_amount_diff)
 
+    print(
+        f'Statistics from this run: {available_amount} available, and {unavailable_amount} unavailable trips.')
     driver.close()
 
 
