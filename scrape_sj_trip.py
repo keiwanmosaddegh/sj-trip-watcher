@@ -13,6 +13,9 @@ op.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
 op.add_argument("--headless")
 op.add_argument("--no-sandbox")
 op.add_argument("--disable-dev-sh-usage")
+op.add_argument("--disable-gpu")
+op.add_argument("--start-maximized")
+op.add_argument("--window-size=1920,1080")
 
 # Email configurations
 port = 465  # For SSL
@@ -73,7 +76,7 @@ def trip_scrape():
     try:
         timetable_present = EC.presence_of_element_located(
             (By.XPATH, '//div[@ng-switch-when="SUCCESS"]'))
-        WebDriverWait(driver, 10).until(timetable_present)
+        WebDriverWait(driver, 5).until(timetable_present)
     except:
         print("Doesn't find table. Exiting function.")
         return
